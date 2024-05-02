@@ -1,4 +1,5 @@
 mod greet;
+mod websocket;
 
 use crossterm::{
     cursor,
@@ -49,6 +50,12 @@ fn main() -> crossterm::Result<()> {
                                 println!("You've executed the 'greet' command.");
                                 greet::greet_command(); // Call the greet_command from the commands module
                             }
+
+                            if input_buffer.trim() == "websocket" {
+                                println!("You've executed the 'websocket' command.");
+                                websocket::send_websocket_message_command(); // Call the send_websocket_message_command from the commands module
+                            }
+
                             input_buffer.clear(); // Clear the buffer after processing
                         }
                         KeyCode::Esc => break, // Optionally handle ESC key to exit
