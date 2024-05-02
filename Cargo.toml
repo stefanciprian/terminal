@@ -11,4 +11,5 @@ futures-util = "0.3"
 tokio = { version = "1", features = ["full"] }
 tokio-tungstenite = "0.16.1"
 url = "2.2.2"
+websocket = "0.24.0"
 

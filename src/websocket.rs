@@ -7,7 +7,7 @@ pub fn send_websocket_message_command() {
     let rt = Runtime::new().unwrap(); // Create the Tokio runtime
 
     rt.block_on(async {
-        let websocket_url = "wss://powermap-production.up.railway.app/post-messages-socket"; // Example WebSocket URL
+        let websocket_url = ""; // Example WebSocket URL
         let message = "Hello, WebSocket!";
         if let Err(e) = send_websocket_message(websocket_url, message).await {
             println!("Error: {}", e);

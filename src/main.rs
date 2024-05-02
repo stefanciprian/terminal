@@ -1,5 +1,6 @@
 mod greet;
 mod websocket;
+mod websocket_client;
 
 use crossterm::{
     cursor,
@@ -54,6 +55,10 @@ fn main() -> crossterm::Result<()> {
                             if input_buffer.trim() == "websocket" {
                                 println!("You've executed the 'websocket' command.");
                                 websocket::send_websocket_message_command(); // Call the send_websocket_message_command from the commands module
+                            }
+
+                            if input_buffer.trim() == "websocket2" {
+                                websocket_client::test(); // Call the test from the websocket_client module
                             }
 
                             input_buffer.clear(); // Clear the buffer after processing
