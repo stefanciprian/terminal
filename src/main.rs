@@ -1,12 +1,14 @@
+mod greet;
+
 use crossterm::{
-    execute,
-    terminal::{self, ClearType},
-    style::{PrintStyledContent, Stylize},
-    event::{self, KeyCode, KeyEvent, Event},
     cursor,
+    event::{self, Event, KeyCode, KeyEvent},
+    execute,
+    style::{PrintStyledContent, Stylize},
+    terminal::{self, ClearType},
     ExecutableCommand,
 };
-use std::io::{self, Write, stdout, stdin};
+use std::io::{self, stdin, stdout, Write};
 
 fn main() -> crossterm::Result<()> {
     let mut stdout = stdout();
@@ -21,7 +23,9 @@ fn main() -> crossterm::Result<()> {
     stdout.execute(PrintStyledContent(styled_message))?;
 
     // Inform the user about how to exit
-    let exit_message = "\nType your commands here. Press ENTER to process. Press ESC or CTRL+C to exit.\n".dark_grey();
+    let exit_message =
+        "\nType your commands here. Press ENTER to process. Press ESC or CTRL+C to exit.\n"
+            .dark_grey();
     stdout.execute(PrintStyledContent(exit_message))?;
 
     // Flush changes to terminal
@@ -35,14 +39,19 @@ fn main() -> crossterm::Result<()> {
                     match code {
                         KeyCode::Char(c) => {
                             input_buffer.push(c);
-                        },
+                        }
                         KeyCode::Enter => {
                             let input_message = format!("\nYou typed: '{}'\n", input_buffer);
                             let styled_input = input_message.green();
                             stdout.execute(PrintStyledContent(styled_input))?;
-                            input_buffer.clear();  // Clear the buffer after processing
-                        },
-                        KeyCode::Esc => break,  // Optionally handle ESC key to exit
+
+                            if input_buffer.trim() == "greet" {
+                                println!("You've executed the 'greet' command.");
+                                greet::greet_command(); // Call the greet_command from the commands module
+                            }
+                            input_buffer.clear(); // Clear the buffer after processing
+                        }
+                        KeyCode::Esc => break, // Optionally handle ESC key to exit
                         _ => (),
                     }
                     stdout.flush()?;
