@@ -1,7 +1,7 @@
+use futures_util::{SinkExt, StreamExt};
 use tokio::runtime::Runtime;
 use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 use url::Url;
-use futures_util::{StreamExt, SinkExt};
 
 pub fn send_websocket_message_command() {
     let rt = Runtime::new().unwrap(); // Create the Tokio runtime

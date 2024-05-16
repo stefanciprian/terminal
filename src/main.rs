@@ -10,7 +10,7 @@ use crossterm::{
     terminal::{self, ClearType},
     ExecutableCommand,
 };
-use std::io::{self, stdin, stdout, Write};
+use std::io::{stdout, Write};
 
 fn main() -> crossterm::Result<()> {
     let mut stdout = stdout();
@@ -18,7 +18,7 @@ fn main() -> crossterm::Result<()> {
 
     // Clear the terminal and set cursor position
     stdout.execute(terminal::Clear(ClearType::All))?;
-    stdout.execute(cursor::MoveTo(10, 10))?;
+    stdout.execute(cursor::MoveTo(5, 1))?;
 
     // Set the text color to green "hacker style"
     let styled_message = "Hello, welcome to Terminal!".green();
@@ -33,6 +33,10 @@ fn main() -> crossterm::Result<()> {
     // Flush changes to terminal
     stdout.flush()?;
 
+    // Display commands that can be executed
+    let commands_message = "\nCommands: greet, websocket, websocket2\n".dark_grey();
+
+    stdout.execute(PrintStyledContent(commands_message))?;
     // Read and process input until CTRL+C is pressed
     loop {
         if event::poll(std::time::Duration::from_secs(1))? {
@@ -59,6 +63,10 @@ fn main() -> crossterm::Result<()> {
 
                             if input_buffer.trim() == "websocket2" {
                                 websocket_client::test(); // Call the test from the websocket_client module
+                            }
+
+                            if input_buffer.trim() == "exit" {
+                                break;
                             }
 
                             input_buffer.clear(); // Clear the buffer after processing
