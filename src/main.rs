@@ -1,3 +1,4 @@
+mod env_vars;
 mod greet;
 mod websocket;
 mod websocket_client;
@@ -54,6 +55,11 @@ fn main() -> crossterm::Result<()> {
                             if input_buffer.trim() == "greet" {
                                 println!("You've executed the 'greet' command.");
                                 greet::greet_command(); // Call the greet_command from the commands module
+                            }
+
+                            if input_buffer.trim() == "env_vars" {
+                                println!("You've executed the 'env_vars' command.");
+                                env_vars::env_vars_command(); // Call the env_vars_command from the commands module  
                             }
 
                             if input_buffer.trim() == "websocket" {
