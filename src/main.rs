@@ -53,29 +53,31 @@ fn main() -> crossterm::Result<()> {
                             let styled_input = input_message.green();
                             stdout.execute(PrintStyledContent(styled_input))?;
 
-                            if input_buffer.trim() == "greet" {
+                            let trimmed_input = input_buffer.trim();
+
+                            if trimmed_input == "greet" {
                                 println!("You've executed the 'greet' command.");
                                 greet::greet_command(); // Call the greet_command from the commands module
                             }
 
-                            if input_buffer.trim() == "list env" {
+                            if trimmed_input == "list env" {
                                 env_vars::list_env_command(); // Call the env_vars_command from the commands module
                             }
 
-                            if input_buffer.starts_with("set env") {
-                                env_vars::set_env_command(input_buffer); // Call the set env from the commands module
+                            if trimmed_input.starts_with("set env") {
+                                env_vars::set_env_command(trimmed_input.to_owned()); // Call the set env from the commands module
                             }
 
-                            if input_buffer.trim() == "websocket" {
+                            if trimmed_input == "websocket" {
                                 println!("You've executed the 'websocket' command.");
                                 websocket::send_websocket_message_command(); // Call the send_websocket_message_command from the commands module
                             }
 
-                            if input_buffer.trim() == "websocket2" {
+                            if trimmed_input == "websocket2" {
                                 websocket_client::test(); // Call the test from the websocket_client module
                             }
 
-                            if input_buffer.trim() == "exit" {
+                            if trimmed_input == "exit" {
                                 break;
                             }
 
