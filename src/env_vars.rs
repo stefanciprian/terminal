@@ -34,9 +34,9 @@ table! {
 }
 
 // This function is moved to `commands.rs`
-pub fn env_vars_command() {
+pub fn list_env_command() {
     let mut stdout = stdout();
-    let greeting = "Hello from Rust! You've executed the 'env_vars' command.".green();
+    let greeting = "Listing environment variables".green();
     stdout.execute(PrintStyledContent(greeting)).unwrap(); // Now `execute` can be used here
     stdout.flush().unwrap();
 
@@ -46,18 +46,59 @@ pub fn env_vars_command() {
     dotenv().ok();
 
     // Insert environment variables into the database
-    for (key, value) in env::vars() {
-        let env_var = EnvVar {
-            id: None,
-            key: key.clone(),
-            value: value.clone(),
-        };
+    // for (key, value) in env::vars() {
+    //     let env_var = EnvVar {
+    //         id: None,
+    //         key: key.clone(),
+    //         value: value.clone(),
+    //     };
 
-        diesel::insert_into(env_vars::table)
-            .values(&env_var)
-            .execute(&mut connection) // Pass mutable reference
-            .expect("Error saving new env var");
+    //     diesel::insert_into(env_vars::table)
+    //         .values(&env_var)
+    //         .execute(&mut connection) // Pass mutable reference
+    //         .expect("Error saving new env var");
+    // }
+
+    // Query environment variables
+    let results = env_vars::table
+        .select(EnvVar::as_select())  // Use the Selectable trait to match struct fields
+        .load::<EnvVar>(&mut connection) // Pass mutable reference
+        .expect("Error loading env vars");
+
+    println!("Displaying {} env vars", results.len());
+    for env_var in results {
+        println!("{}: {}", env_var.key, env_var.value);
     }
+}
+
+pub fn set_env_command(input_buffer: String) {
+    let mut stdout = stdout();
+    let greeting = "Setting environment variables".green();
+    stdout.execute(PrintStyledContent(greeting)).unwrap(); // Now `execute` can be used here
+    stdout.flush().unwrap();
+
+    let mut connection = establish_connection();
+
+    // Load environment variables from .env file
+    dotenv().ok();
+
+    // Insert environment variables into the database
+    // Extract the key and value from the input_buffer
+    let key_value = input_buffer.trim_start_matches("set env").trim();
+    let key_value: Vec<&str> = key_value.split_whitespace().collect();
+    let key = key_value[0];
+    let value = key_value[1];
+
+    let env_var = EnvVar {
+        id: None,
+        key: key.to_string(),
+        value: value.to_string(),
+    };
+
+    diesel::insert_into(env_vars::table)
+        .values(&env_var)
+        .execute(&mut connection) // Pass mutable reference
+        .expect("Error saving new env var");
 
     // Query environment variables
     let results = env_vars::table

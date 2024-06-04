@@ -35,7 +35,8 @@ fn main() -> crossterm::Result<()> {
     stdout.flush()?;
 
     // Display commands that can be executed
-    let commands_message = "\nCommands: greet, env_vars, websocket, websocket2\n".dark_grey();
+    let commands_message =
+        "\nCommands: greet, list env, set env, websocket, websocket2\n".dark_grey();
 
     stdout.execute(PrintStyledContent(commands_message))?;
     // Read and process input until CTRL+C is pressed
@@ -57,9 +58,12 @@ fn main() -> crossterm::Result<()> {
                                 greet::greet_command(); // Call the greet_command from the commands module
                             }
 
-                            if input_buffer.trim() == "env_vars" {
-                                println!("You've executed the 'env_vars' command.");
-                                env_vars::env_vars_command(); // Call the env_vars_command from the commands module  
+                            if input_buffer.trim() == "list env" {
+                                env_vars::list_env_command(); // Call the env_vars_command from the commands module
+                            }
+
+                            if input_buffer.starts_with("set env") {
+                                env_vars::set_env_command(input_buffer); // Call the set env from the commands module
                             }
 
                             if input_buffer.trim() == "websocket" {
