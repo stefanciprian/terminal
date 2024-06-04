@@ -1,16 +1,17 @@
-#[macro_use]
-extern crate diesel;
+//#[macro_use]
+//extern crate diesel;
 
 use crossterm::style::{PrintStyledContent, Stylize};
 use crossterm::ExecutableCommand; // Import the necessary trait
 use diesel::prelude::*;
-use diesel::sqlite::SqliteConnection;
+use diesel::sqlite::{Sqlite, SqliteConnection};
 use dotenvy::dotenv;
 use std::env;
 use std::io::{self, stdout, Write};
 
 #[derive(Queryable, Insertable, Selectable, Debug)]
 #[diesel(table_name = env_vars)]
+#[diesel(check_for_backend(Sqlite))]
 struct EnvVar {
     id: Option<i32>,
     key: String,
@@ -26,7 +27,7 @@ fn establish_connection() -> SqliteConnection {
 
 table! {
     env_vars (id) {
-        id -> Integer,
+        id -> Nullable<Integer>,
         key -> Text,
         value -> Text,
     }

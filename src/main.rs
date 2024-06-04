@@ -35,7 +35,7 @@ fn main() -> crossterm::Result<()> {
     stdout.flush()?;
 
     // Display commands that can be executed
-    let commands_message = "\nCommands: greet, websocket, websocket2\n".dark_grey();
+    let commands_message = "\nCommands: greet, env_vars, websocket, websocket2\n".dark_grey();
 
     stdout.execute(PrintStyledContent(commands_message))?;
     // Read and process input until CTRL+C is pressed
