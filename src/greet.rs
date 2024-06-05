@@ -5,7 +5,7 @@ use std::io::{self, stdout, Write};
 // This function is moved to `commands.rs`
 pub fn greet_command() {
     let mut stdout = stdout();
-    let greeting = "Hello from Rust! You've executed the 'greet' command.".green();
+    let greeting = "Hello from Rust! You've executed the 'greet' command.\n".green();
     stdout.execute(PrintStyledContent(greeting)).unwrap(); // Now `execute` can be used here
     stdout.flush().unwrap();
 }

@@ -126,6 +126,63 @@ pub fn set_env_command(input_buffer: String) {
         println!("Environment variable set: {} = {}", key, value);
     }
 
+    // Reload the environment variables from the database
+    reload_env_command();
+
     // Call list_env_command to display the updated list of environment variables
     list_env_command();
+}
+
+// Reload the environment variables from the sqlite database
+pub fn reload_env_command() {
+    let mut stdout = stdout();
+    let greeting = "Loaded environment variables...\n".green();
+    stdout.execute(PrintStyledContent(greeting)).unwrap();
+    stdout.flush().unwrap();
+
+    // Load environment variables from .env file
+    dotenv().ok();
+
+    // Establish connection to the database
+    let mut connection = establish_connection();
+
+    // Load the environment variables from the database
+    let results = env_vars::table
+        .select(EnvVar::as_select())
+        .load::<EnvVar>(&mut connection)
+        .expect("Error loading env vars");
+
+    // Set the environment variables
+    for env_var in results {
+        env::set_var(&env_var.key, &env_var.value);
+    }
+}
+
+// Remove environment variables from that system the database, and after clean the table
+pub fn clear_env_command() {
+    let mut stdout = stdout();
+    let greeting = "Clearing environment variables".green();
+    stdout.execute(PrintStyledContent(greeting)).unwrap();
+    stdout.flush().unwrap();
+
+    // Establish connection to the database
+    let mut connection = establish_connection();
+
+    // Load the environment variables from the database
+    let results = env_vars::table
+        .select(EnvVar::as_select())
+        .load::<EnvVar>(&mut connection)
+        .expect("Error loading env vars");
+
+    // Remove the environment variables from the system
+    for env_var in results {
+        env::remove_var(&env_var.key);
+    }
+
+    // Clear the table
+    diesel::delete(env_vars::table)
+        .execute(&mut connection)
+        .expect("Error clearing env vars");
+
+    println!("Environment variables cleared");
 }

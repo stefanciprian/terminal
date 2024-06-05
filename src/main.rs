@@ -19,40 +19,47 @@ fn main() -> crossterm::Result<()> {
 
     // Clear the terminal and set cursor position
     stdout.execute(terminal::Clear(ClearType::All))?;
-    stdout.execute(cursor::MoveTo(5, 1))?;
+    stdout.execute(cursor::MoveTo(3, 1))?;
 
     // Set the text color to green "hacker style"
-    let styled_message = "Hello, welcome to Terminal!".green();
+    let styled_message = "Hello, Welcome to Terminal!\n".green();
     stdout.execute(PrintStyledContent(styled_message))?;
 
     // Inform the user about how to exit
-    let exit_message = "\nType your commands here. Press ENTER to process. Press ESC or CTRL+C to exit.\n"
-        .dark_grey();
+    let exit_message =
+        "\nType your commands and press ENTER to process. Press ESC or CTRL+C to exit.\n"
+            .dark_grey();
     stdout.execute(PrintStyledContent(exit_message))?;
 
     // Flush changes to terminal
     stdout.flush()?;
 
     // Display commands that can be executed
-    let commands_message = "\nCommands:\n\n"
-        .to_string()
+    let commands_message = "\nCommands:\n\n".to_string()
         + "  greet       - Greet the user\n"
         + "  list env    - List environment variables\n"
         + "  set env     - Set an environment variable (usage: set env <KEY> <VALUE>)\n"
+        + "  clear env   - Clear all environment variables\n"
         + "  websocket   - Send a WebSocket message\n"
-        + "  websocket2  - Test WebSocket client\n";
-    
+        + "  websocket2  - Test WebSocket client\n"
+        + "  exit        - Exit the program\n";
+
     let styled_commands_message = commands_message
         .dark_grey()
         .to_string()
         .replace("greet       -", &"greet       -".green().to_string())
         .replace("list env    -", &"list env    -".green().to_string())
+        .replace("clear env   -", &"clear env   -".green().to_string())
         .replace("set env     -", &"set env     -".green().to_string())
         .replace("websocket   -", &"websocket   -".green().to_string())
-        .replace("websocket2  -", &"websocket2  -".green().to_string());
+        .replace("websocket2  -", &"websocket2  -".green().to_string())
+        .replace("exit        -", &"exit        -".green().to_string());
 
     stdout.execute(PrintStyledContent(styled_commands_message.stylize()))?;
-    
+
+    // Load environment variables from table
+    env_vars::reload_env_command();
+
     // Read and process input until CTRL+C is pressed
     loop {
         if event::poll(std::time::Duration::from_secs(1))? {
@@ -79,7 +86,12 @@ fn main() -> crossterm::Result<()> {
                             }
 
                             if trimmed_input.starts_with("set env") {
-                                env_vars::set_env_command(trimmed_input.to_string()); // Call the set env from the commands module
+                                env_vars::set_env_command(trimmed_input.to_string());
+                                // Call the set env from the commands module
+                            }
+
+                            if trimmed_input == "clear env" {
+                                env_vars::clear_env_command(); // Call the clear_env_command from the commands module
                             }
 
                             if trimmed_input == "websocket" {
