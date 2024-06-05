@@ -14,6 +14,7 @@ use crossterm::{
 use std::io::{stdout, Write};
 
 fn main() -> crossterm::Result<()> {
+    // Check if env_vars.db exists, if not run diesel migration
     let mut stdout = stdout();
     let mut input_buffer = String::new();
 

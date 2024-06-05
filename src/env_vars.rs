@@ -1,14 +1,16 @@
-//#[macro_use]
-//extern crate diesel;
-
 use crossterm::event::{self, Event, KeyCode};
 use crossterm::style::{PrintStyledContent, Stylize};
 use crossterm::ExecutableCommand;
 use diesel::prelude::*;
+use diesel::sql_query;
 use diesel::sqlite::{Sqlite, SqliteConnection};
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use dotenvy::dotenv;
 use std::env;
 use std::io::{stdout, Write};
+
+// Embed the migrations, assuming your migrations are in the "migrations" directory.
+// embed_migrations!("./migrations");
 
 #[derive(Queryable, Insertable, Selectable, Debug)]
 #[diesel(table_name = env_vars)]
@@ -22,8 +24,11 @@ struct EnvVar {
 fn establish_connection() -> SqliteConnection {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    //let mut connection =
     SqliteConnection::establish(&database_url)
         .expect(&format!("Error connecting to {}", database_url))
+    //run_migrations(&mut connection);
+    //connection
 }
 
 table! {
@@ -57,7 +62,7 @@ pub fn set_env_command(input_buffer: String) {
     let mut connection = establish_connection();
 
     // Load environment variables from .env file
-    dotenv().ok();
+    //dotenv().ok();
 
     // Extract the key and value from the input_buffer
     let key_value = input_buffer.trim_start_matches("set env").trim();
@@ -140,9 +145,6 @@ pub fn reload_env_command() {
     stdout.execute(PrintStyledContent(greeting)).unwrap();
     stdout.flush().unwrap();
 
-    // Load environment variables from .env file
-    dotenv().ok();
-
     // Establish connection to the database
     let mut connection = establish_connection();
 
@@ -186,3 +188,19 @@ pub fn clear_env_command() {
 
     println!("Environment variables cleared");
 }
+
+// fn table_exists(conn: &SqliteConnection, table_name: &str) -> bool {
+//     let query = format!(
+//         "SELECT name FROM sqlite_master WHERE type='table' AND name='{}'",
+//         table_name
+//     );
+//     match sql_query(query).execute(&mut conn) {
+//         Ok(rows) => rows > 0,
+//         Err(_) => false,
+//     }
+// }
+
+// fn run_migrations(conn: &mut SqliteConnection) {
+//     conn.run_pending_migrations(MIGRATIONS)
+//         .expect("Error running migrations");
+// }
